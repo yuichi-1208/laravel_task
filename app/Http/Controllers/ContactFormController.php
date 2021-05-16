@@ -9,6 +9,8 @@ use App\Models\ContactForm;
 
 use App\Services\CheckFormData;
 
+use App\Http\Requests\StoreContactForm;
+
 class ContactFormController extends Controller
 {
     /**
@@ -48,8 +50,9 @@ class ContactFormController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreContactForm $request)
     {
+        // dd($request);
         $contact = new ContactForm;
 
         $contact->your_name = $request->input('your_name');
@@ -105,7 +108,7 @@ class ContactFormController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(StoreContactForm $request, $id)
     {
         //
         $contact = ContactForm::find($id);
