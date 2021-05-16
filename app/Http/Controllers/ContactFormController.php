@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ContactForm;
 
 use App\Services\CheckFormData;
+use App\Services\SearchData;
 
 use App\Http\Requests\StoreContactForm;
 
@@ -18,16 +19,35 @@ class ContactFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $search = $request->input('search');
+
+        // dd($search);
         //eloquant ormaper↓（データベースから全ての値をとってきたい時）
         // $contacts = ContactForm::all();
 
         // クエリビルダ↓（データベースから特定のカラムを絞って値をとってきたい時,データの数が少ないので処理が早くなるだろう）
-        $contacts = DB::table('contact_forms')
-        ->select('id','your_name', 'title', 'created_at')
-        ->orderBy('created_at', 'desc')
-        ->get();
+        // $contacts = DB::table('contact_forms')
+        // ->select('id','your_name', 'title', 'created_at')
+        // ->orderBy('created_at', 'desc')
+        // ->paginate(20);
+
+        // 検索フォーム
+        $query = DB::table('contact_forms');
+
+        if($search !== null) {
+            $search_split2 = SearchData::search($search);
+            foreach($search_split2 as $value)
+            {
+                $query->where('your_name', 'like', '%'.$value.'%');
+            }
+        }
+
+        $query->select('id','your_name', 'title', 'created_at');
+        $query->orderBy('created_at', 'asc');
+        $contacts = $query->paginate(20);
 
         // dd($contacts);
         return view('contact.index', compact('contacts'));
